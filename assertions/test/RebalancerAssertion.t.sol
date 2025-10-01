@@ -105,6 +105,11 @@ contract TestRebalancerAssertion is CredibleTest, Test {
         // Whitelist destination chain
         rebalancer.setWhitelistedDestination(1, true); // Chain ID 1
 
+        // Configure allowed tokens per bridge
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(mockToken);
+        rebalancer.setAllowedTokens(address(bridge), tokens, true);
+
         // Set transfer size limits
         rebalancer.setMinTransferSize(1, address(mockToken), 100e18);
         rebalancer.setMaxTransferSize(1, address(mockToken), 10000e18);
