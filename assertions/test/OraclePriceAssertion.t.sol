@@ -118,7 +118,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity to borrow
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity before borrow test:", liquidity);
         console.log("Alice shortfall before borrow test:", shortfall);
 
@@ -152,7 +152,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity:", liquidity);
         console.log("Alice shortfall:", shortfall);
 
@@ -202,7 +202,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         eOracleFeed.setPrice(int256(0.1e8)); // Keep both feeds consistent
 
         // Check Alice's liquidity status
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity for liquidation test:", liquidity);
         console.log("Alice shortfall for liquidation test:", shortfall);
 
@@ -251,7 +251,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity:", liquidity);
         console.log("Alice shortfall:", shortfall);
 
@@ -289,7 +289,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity:", liquidity);
         console.log("Alice shortfall:", shortfall);
 
@@ -328,7 +328,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         assertTrue(liquidity > 0, "Alice should have liquidity");
         assertTrue(shortfall == 0, "Alice should have no shortfall");
 
@@ -361,7 +361,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         assertTrue(liquidity > 0, "Alice should have liquidity");
         assertTrue(shortfall == 0, "Alice should have no shortfall");
 
@@ -394,7 +394,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         assertTrue(liquidity > 0, "Alice should have liquidity");
         assertTrue(shortfall == 0, "Alice should have no shortfall");
 
@@ -428,7 +428,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         _setupCollateral(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         assertTrue(liquidity > 0, "Alice should have liquidity");
         assertTrue(shortfall == 0, "Alice should have no shortfall");
 
@@ -492,7 +492,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         eOracleFeed.setPrice(int256(0.101e8)); // 1% price change from 0.1 - should pass (within 5% tolerance)
 
         // Check Alice's liquidity status to ensure she has shortfall
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity for price stability test:", liquidity);
         console.log("Alice shortfall for price stability test:", shortfall);
 
@@ -533,7 +533,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         eOracleFeed.setPrice(int256(0.2e8)); // 100% price change from 0.1 - should fail (exceeds 5% tolerance)
 
         // Check Alice's liquidity status to ensure she has shortfall
-        (uint256 liquidity, uint256 shortfall) = operator.getAccountLiquidity(alice);
+        (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity for dramatic change test:", liquidity);
         console.log("Alice shortfall for dramatic change test:", shortfall);
 

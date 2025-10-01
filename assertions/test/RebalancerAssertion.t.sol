@@ -80,7 +80,7 @@ contract TestRebalancerAssertion is CredibleTest, Test {
         roles = new Roles(address(this));
 
         // Deploy rebalancer
-        rebalancer = new Rebalancer(address(roles), saveAddress);
+        rebalancer = new Rebalancer(address(roles), saveAddress, address(this));
 
         // Deploy mock contracts
         bridge = new MockBridge();

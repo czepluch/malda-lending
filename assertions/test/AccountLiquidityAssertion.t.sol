@@ -524,7 +524,7 @@ contract TestAccountLiquidityAssertion is BaseAssertionTest {
         // Execute valid seize operation via operator hook
         // The assertion should pass as long as parameters are valid (not zero addresses)
         vm.prank(bob);
-        operator.beforeMTokenSeize(address(mUSDT), address(mUSDC), bob, alice);
+        operator.beforeMTokenSeize(address(mUSDT), address(mUSDC), bob);
     }
 
     /**
