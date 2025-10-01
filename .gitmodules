@@ -13,3 +13,6 @@
 [submodule "lib/risc0-ethereum"]
 	path = lib/risc0-ethereum
 	url = https://github.com/risc0/risc0-ethereum
+[submodule "lib/credible-std"]
+	path = lib/credible-std
+	url = https://github.com/phylaxsystems/credible-std.git
