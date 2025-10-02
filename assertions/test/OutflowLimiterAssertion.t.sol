@@ -83,7 +83,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for borrow outflow monitoring
@@ -105,7 +104,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // First, use up most of the limit (9000 USDC)
@@ -132,7 +130,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for cumulative tracking before first borrow
@@ -170,7 +167,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Use up most of the limit
@@ -204,7 +200,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 200000e6); // 200,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Disable the limit
@@ -230,7 +225,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
         // Alice now has mUSDC tokens she can redeem
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for redeem outflow monitoring
@@ -252,7 +246,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion
@@ -291,7 +284,6 @@ contract TestOutflowLimiterAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100000e6); // 100,000 USDC collateral
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for cumulative tracking before borrow

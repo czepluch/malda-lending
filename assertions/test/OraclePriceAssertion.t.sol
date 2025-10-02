@@ -7,7 +7,7 @@ import {IOperatorDefender, IOperator} from "../../src/interfaces/IOperator.sol";
 import {IOracleOperator} from "../../src/interfaces/IOracleOperator.sol";
 import {console} from "forge-std/console.sol";
 
-// Additional imports for proper mToken testing
+// Additional imports for mToken testing
 import {mErc20Immutable} from "../../src/mToken/mErc20Immutable.sol";
 import {mErc20Host} from "../../src/mToken/host/mErc20Host.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -22,7 +22,7 @@ import {OracleMock} from "../../test/mocks/OracleMock.sol";
 contract TestOraclePriceAssertion is BaseAssertionTest {
     OraclePriceAssertion public assertion;
 
-    // Real mToken instances for proper testing
+    // mToken market instances
     mErc20Immutable public mWeth;
     mErc20Host public mDaiHost;
 
@@ -42,8 +42,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     }
 
     /**
-     * @notice Setup real mToken instances for proper testing
-     * @dev Uses the same pattern as mToken_Unit_Shared to ensure compatibility
+     * @notice Setup mToken market instances for testing
      */
     function _setupRealMTokens() internal {
         // Setup zkVerifier (required for mErc20Host)
@@ -53,9 +52,9 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         zkVerifier = new ZkVerifier(address(this), "0x123", address(verifierMock));
         vm.label(address(zkVerifier), "ZkVerifier contract");
 
-        // Deploy mUSDT (non-proxy) - using USDT as collateral
+        // Deploy mUSDC market
         mWeth = new mErc20Immutable(
-            address(usdc), // Use USDC instead of WETH
+            address(usdc),
             address(operator),
             address(interestModel),
             1e18,
@@ -111,7 +110,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         // Test borrowing a reasonable amount of USDC (10 USDC = 10e6)
         uint256 borrowAmount = 10e6; // 10 USDC
 
-        // Call the operator hook directly with proper mToken address
+        // Call operator hook
         vm.prank(alice);
         operator.beforeMTokenBorrow(address(mWeth), alice, borrowAmount);
     }
@@ -119,7 +118,6 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     /**
      * @notice Test that borrow price sanity assertion fails with zero price
      * @dev Tests the assertionBorrowPriceSanity function with zero price to verify it catches invalid prices
-     * Uses the same proper setup as the working testBorrowPriceSanityPassesWithValidPrice test
      */
     function testBorrowPriceSanityFailsWithZeroPrice() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
@@ -161,7 +159,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
      * Uses a simplified approach that focuses on testing the assertion mechanism
      */
     function testLiquidationPriceSanityPassesWithValidPrice() public {
-        // Setup: Use the mock mToken approach for proper liquidation testing
+        // Use mock mToken for liquidation testing
         // This test uses the same approach as testLiquidationWorksWithoutAssertions
 
         // Setup Alice with collateral in the collateral market (USDT)
@@ -172,7 +170,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         operator.setLiquidationIncentive(address(mockMToken), 1.1e18); // 10% liquidation incentive
 
         // Create a shortfall by manipulating oracle price
-        // Use a very low price to ensure shortfall
+        // Set low price to create shortfall
         api3Feed.setPrice(int256(0.1e8)); // 90% price drop to create shortfall
         eOracleFeed.setPrice(int256(0.1e8)); // Keep both feeds consistent
 
@@ -218,7 +216,6 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     /**
      * @notice Test that borrow price stability assertion passes with stable prices
      * @dev Tests the assertionBorrowPriceStability function with minimal price changes
-     * Uses the same proper setup as the working testBorrowPriceSanityPassesWithValidPrice test
      */
     function testBorrowPriceStabilityPassesWithStablePrice() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
@@ -247,16 +244,14 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         // Test borrowing a reasonable amount of USDC (10 USDC = 10e6)
         uint256 borrowAmount = 10e6; // 10 USDC
 
-        // Call the operator hook directly with proper mToken address
+        // Call operator hook
         vm.prank(alice);
         operator.beforeMTokenBorrow(address(mWeth), alice, borrowAmount);
     }
 
     /**
      * @notice Test that borrow price stability assertion passes when prices are changed before transaction
-     * @dev Tests the assertionBorrowPriceStability function - since prices are changed BEFORE the transaction,
-     * there is no intra-transaction price change, so the assertion correctly passes
-     * Uses the same proper setup as the working testBorrowPriceSanityPassesWithValidPrice test
+     * @dev Prices changed BEFORE the transaction means no intra-transaction price change
      */
     function testBorrowPriceStabilityFailsWithDramaticChange() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
@@ -272,10 +267,9 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         assertTrue(liquidity > 0, "Alice should have liquidity");
         assertTrue(shortfall == 0, "Alice should have no shortfall");
 
-        // Change prices BEFORE the transaction starts
-        // This means there will be no intra-transaction price change
-        api3Feed.setPrice(2e8); // 100% price change - but before transaction
-        eOracleFeed.setPrice(2e8); // Update both feeds
+        // Change prices BEFORE the transaction starts (no intra-transaction price change)
+        api3Feed.setPrice(2e8); // 100% price change
+        eOracleFeed.setPrice(2e8);
 
         // Register assertion for next transaction
         cl.assertion({
@@ -284,11 +278,10 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
             fnSelector: OraclePriceAssertion.assertionBorrowPriceStability.selector
         });
 
-        // Test borrowing a reasonable amount of USDC (10 USDC = 10e6)
-        uint256 borrowAmount = 10e6; // 10 USDC
+        // Borrow a reasonable amount (10 USDC = 10e6)
+        uint256 borrowAmount = 10e6;
 
-        // Since prices were changed BEFORE the transaction, there is no intra-transaction
-        // price change, so the assertion should pass (which is correct behavior)
+        // No intra-transaction price change, so assertion should pass
         vm.prank(alice);
         operator.beforeMTokenBorrow(address(mWeth), alice, borrowAmount);
     }
@@ -416,7 +409,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
 
         // TODO: fix this test, we probably need to mock the entire oracle
         // Mock the eOracle feed to return a different price during the transaction
-        // This simulates a price feed being compromised or updated mid-transaction
+        // Simulate price feed manipulation mid-transaction
         vm.mockCall(
             address(eOracleFeed),
             abi.encodeWithSelector(IDefaultAdapter.latestRoundData.selector),
@@ -447,15 +440,11 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
      * @dev Tests the assertionLiquidationPriceStability function with minimal price changes
      *
      * TODO: This test is conceptually wrong. The assertion checks for intra-transaction price changes
-     * (price manipulation DURING the transaction), but this test sets all prices BEFORE the transaction.
-     * To properly test, we need to simulate price changes that occur DURING liquidation execution,
-     * similar to sandwich attacks. See AccountLiquidityAssertion tests for proper liquidation setup patterns.
+     * but this test sets all prices BEFORE the transaction. To properly test, we need to simulate
+     * price changes that occur DURING liquidation execution.
      */
     function testLiquidationPriceStabilityPassesWithStablePrice() public {
-        // Use the simple mock setup instead of real mTokens for liquidation tests
-        // This matches the pattern used in testLiquidationPriceSanityPassesWithValidPrice
-        // Note: _setupBasicMarket() already called in BaseAssertionTest.setUp()
-        _setupAliceWithCollateral(); // Sets up mock collateral markets
+        _setupAliceWithCollateral();
 
         // Set up liquidation parameters (required for liquidation to be allowed)
         operator.setCloseFactor(0.5e18); // 50% close factor
@@ -466,7 +455,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         api3Feed.setPrice(int256(0.1e8)); // 90% price drop to create shortfall
         eOracleFeed.setPrice(int256(0.101e8)); // 1% price change from 0.1 - should pass (within 5% tolerance)
 
-        // Check Alice's liquidity status to ensure she has shortfall
+        // Verify Alice has shortfall
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity for price stability test:", liquidity);
         console.log("Alice shortfall for price stability test:", shortfall);
@@ -507,7 +496,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         api3Feed.setPrice(int256(0.1e8)); // 90% price drop to create shortfall
         eOracleFeed.setPrice(int256(0.2e8)); // 100% price change from 0.1 - should fail (exceeds 5% tolerance)
 
-        // Check Alice's liquidity status to ensure she has shortfall
+        // Verify Alice has shortfall
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
         console.log("Alice liquidity for dramatic change test:", liquidity);
         console.log("Alice shortfall for dramatic change test:", shortfall);
@@ -536,8 +525,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
 
     /**
      * @notice Test that Alice can successfully call mToken.borrow() without assertions
-     * @dev This test verifies our test setup works correctly by testing the actual user flow
-     * Uses real mTokens and proper setup to ensure realistic testing
+     * @dev Verifies test setup works correctly
      */
 }
 
@@ -584,9 +572,8 @@ contract MockMTokenWithPriceChange is mErc20Immutable {
      */
     function changePriceDuringTransaction() external {
         if (!priceChanged) {
-            // Change the eOracle feed price during the transaction
-            // This simulates a price feed being compromised or updated mid-transaction
-            OracleMock(eOracleFeed).setPrice(3e8); // Change to $3.00 (200% deviation)
+            // Simulate intra-transaction price feed manipulation
+            OracleMock(eOracleFeed).setPrice(3e8); // 200% deviation
             priceChanged = true;
         }
     }

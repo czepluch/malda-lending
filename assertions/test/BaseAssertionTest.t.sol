@@ -194,8 +194,8 @@ abstract contract BaseAssertionTest is CredibleTest, Base_Unit_Test {
     }
 
     /**
-     * @notice Setup the real MixedPriceOracleV4 oracle with proper configuration
-     * @dev Configures oracle with USDC symbol and reasonable default settings
+     * @notice Setup the MixedPriceOracleV4 oracle
+     * @dev Configures oracle with USDC symbol and default settings
      */
     function _setupRealOracle() internal {
         // Grant GUARDIAN_ORACLE role to this test contract

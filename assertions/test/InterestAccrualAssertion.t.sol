@@ -170,7 +170,6 @@ contract TestInterestAccrualAssertion is BaseAssertionTest {
         uint256 collateralAmount = 100e6;
         _setupCollateralReal(address(mUSDC), alice, collateralAmount);
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for next transaction
@@ -213,7 +212,6 @@ contract TestInterestAccrualAssertion is BaseAssertionTest {
         // Set a very high borrow rate that is unreasonable
         mockInterestModel.setBorrowRate(5e14); // Way too high
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for next transaction
@@ -250,7 +248,6 @@ contract TestInterestAccrualAssertion is BaseAssertionTest {
         // Setup Alice with collateral using real mToken
         _setupCollateralReal(address(mUSDC), alice, 100e6);
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion for redeem
@@ -274,7 +271,6 @@ contract TestInterestAccrualAssertion is BaseAssertionTest {
         // Set an unreasonably high borrow rate (>1000% APY)
         mockInterestModel.setBorrowRate(4e14); // Way too high!
 
-        // Ensure Alice is whitelisted
         operator.setWhitelistedUser(alice, true);
 
         // Register assertion

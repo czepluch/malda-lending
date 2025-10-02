@@ -138,15 +138,14 @@ contract AccountLiquidityAssertion is Assertion {
             // If the call succeeded (we're in post-call), shortfallBefore must be 0
             require(shortfallBefore == 0, "Redeem allowed despite insufficient liquidity");
 
-            // Assert that the redeem operation was properly accounted for
-            // The liquidity should generally decrease after a redeem (unless it was excess collateral)
+            // Verify redeem did not cause underwater account
             require(shortfallAfter == 0, "Redeem caused account to become underwater");
         }
     }
 
     /**
      * @notice Assert that seize operations are part of valid liquidation flows
-     * @dev Verifies that seize operations are properly gated by liquidation requirements
+     * @dev Verifies that seize operations are gated by liquidation requirements
      */
     function assertionSeizeLiquidity() external {
         IOperatorDefender operatorDefender = IOperatorDefender(ph.getAssertionAdopter());

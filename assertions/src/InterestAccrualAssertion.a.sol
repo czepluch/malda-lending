@@ -108,7 +108,7 @@ contract InterestAccrualAssertion is Assertion {
 
     /**
      * @notice Assert that interest accrual maintains monotonicity during liquidations
-     * @dev Verifies proper interest handling during liquidation operations
+     * @dev Verifies interest handling during liquidation operations
      */
     function assertionLiquidationInterestMonotonicity() external {
         IOperatorDefender operator = IOperatorDefender(ph.getAssertionAdopter());
@@ -151,7 +151,7 @@ contract InterestAccrualAssertion is Assertion {
 
     /**
      * @notice Assert that interest accrual maintains monotonicity during redeem operations
-     * @dev Verifies proper interest handling when users redeem mTokens
+     * @dev Verifies interest handling when users redeem mTokens
      */
     function assertionRedeemInterestMonotonicity() external {
         IOperatorDefender operator = IOperatorDefender(ph.getAssertionAdopter());

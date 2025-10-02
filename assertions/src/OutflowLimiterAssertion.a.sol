@@ -91,7 +91,7 @@ contract OutflowLimiterAssertion is Assertion {
             ph.forkPostCall(borrowCalls[i].id);
             uint256 cumulativeOutflowAfter = operator.cumulativeOutflowVolume();
 
-            // Verify that the outflow was properly tracked
+            // Verify outflow tracking
             if (cumulativeOutflowAfter > cumulativeOutflowBefore) {
                 uint256 outflowIncrease = cumulativeOutflowAfter - cumulativeOutflowBefore;
 
@@ -154,7 +154,7 @@ contract OutflowLimiterAssertion is Assertion {
             ph.forkPostCall(redeemCalls[i].id);
             uint256 cumulativeOutflowAfter = operator.cumulativeOutflowVolume();
 
-            // Verify that the outflow was properly tracked
+            // Verify outflow tracking
             if (cumulativeOutflowAfter > cumulativeOutflowBefore) {
                 uint256 outflowIncrease = cumulativeOutflowAfter - cumulativeOutflowBefore;
 
@@ -252,8 +252,7 @@ contract OutflowLimiterAssertion is Assertion {
 
         // If enough time has passed since last reset
         if (block.timestamp >= lastResetTimestampBefore + timeWindow) {
-            // Edge case: A reset should have occurred if there was any outflow operation
-            // This catches bugs where the reset logic might be bypassed or not triggered properly
+            // Check if reset occurred for any outflow operation
             PhEvm.CallInputs[] memory borrowCalls =
                 ph.getCallInputs(address(operator), IOperatorDefender.beforeMTokenBorrow.selector);
             PhEvm.CallInputs[] memory redeemCalls =
@@ -268,11 +267,10 @@ contract OutflowLimiterAssertion is Assertion {
                     "Outflow reset timestamp not updated after time window expired"
                 );
 
-                // After reset, the cumulative volume should only contain the current transaction's outflow
-                // It should be less than or equal to what it was before (unless new outflows were added)
+                // After reset, cumulative volume should not exceed limit
                 require(
                     cumulativeOutflowAfter <= limitPerTimePeriod,
-                    "Cumulative outflow not properly reset after time window"
+                    "Cumulative outflow not reset after time window"
                 );
             }
         } else {

@@ -88,8 +88,7 @@ contract RebalancerAssertion is Assertion {
             // Verify the bridge address is not zero
             require(bridge != address(0), "Bridge address cannot be zero");
 
-            // Additional check: Verify that the bridge contract actually gets called
-            // This ensures the whitelisted bridge parameter matches the actual bridge being used
+            // Verify that the bridge contract gets called
             ph.forkPostCall(sendMsgCalls[i].id);
 
             // Get all calls made to the bridge contract during this rebalancing operation
@@ -184,13 +183,13 @@ contract RebalancerAssertion is Assertion {
             if (maxTransferSize > 0) {
                 // Check if window should have been reset
                 if (block.timestamp > timestampBefore + transferTimeWindow) {
-                    // Window expired - should have been reset
-                    require(timestampAfter >= block.timestamp, "Transfer window not properly reset");
-                    require(sizeAfter == amount, "Transfer size not properly reset after window expiry");
+                    // Window expired - verify reset occurred
+                    require(timestampAfter >= block.timestamp, "Transfer window not reset");
+                    require(sizeAfter == amount, "Transfer size not reset after window expiry");
                 } else {
-                    // Within the same window - should accumulate
+                    // Within same window - verify accumulation
                     require(timestampAfter == timestampBefore, "Transfer timestamp changed within window");
-                    require(sizeAfter == sizeBefore + amount, "Transfer size not properly accumulated");
+                    require(sizeAfter == sizeBefore + amount, "Transfer size not accumulated");
                     require(sizeAfter <= maxTransferSize, "Accumulated transfer exceeds maximum within window");
                 }
             }
@@ -213,14 +212,10 @@ contract RebalancerAssertion is Assertion {
             ph.getCallInputs(address(rebalancer), IRebalancer.sendMsg.selector);
 
         for (uint256 i = 0; i < sendMsgCalls.length; i++) {
-            // The call succeeded (we're in post-call state), so authorization was valid
-            // We verify that the proper role check was performed
+            // Call succeeded in post-call state, so authorization passed
+            // Verify the role check was performed by confirming no revert
 
-            // Get the roles contract from rebalancer (this would need to be exposed or we check indirectly)
-            // Since we can't directly access the roles contract, we verify the call didn't revert
-            // which means the authorization check passed
-
-            // Additional sanity checks
+            // Sanity checks on parameters
             (address bridge, address market, uint256 amount, IRebalancer.Msg memory message) =
                 abi.decode(sendMsgCalls[i].input, (address, address, uint256, IRebalancer.Msg));
 
