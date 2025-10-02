@@ -361,7 +361,7 @@ abstract contract BaseAssertionTest is CredibleTest, Base_Unit_Test {
 
         // User supplies tokens to the mToken market
         vm.prank(user);
-        mErc20Immutable(mToken).mint(supplyAmount, user, supplyAmount);
+        mErc20Immutable(mToken).mint(supplyAmount, user, 0); // minAmountOut = 0 to account for 1000 token initial supply fee
 
         // User enters the market (required for borrowing)
         address[] memory mTokens = new address[](1);

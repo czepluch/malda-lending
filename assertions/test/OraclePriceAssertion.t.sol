@@ -79,33 +79,8 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
         eOracleFeed.setPrice(int256(DEFAULT_ORACLE_PRICE)); // 1e18
     }
 
-    /**
-     * @notice Setup collateral for a user by minting tokens and supplying them to an mToken
-     * @dev Similar to _borrowPrerequisites from mToken_Unit_Shared
-     * @param mToken The mToken to supply to
-     * @param user The user to setup collateral for
-     * @param supplyAmount The amount of underlying tokens to supply
-     */
-    function _setupCollateral(address mToken, address user, uint256 supplyAmount) internal {
-        address underlying = mErc20Immutable(mToken).underlying();
-
-        // Mint underlying tokens to the user
-        ERC20Mock(underlying).mint(user, supplyAmount);
-
-        // User approves mToken to spend their underlying tokens
-        vm.prank(user);
-        IERC20(underlying).approve(mToken, supplyAmount);
-
-        // User supplies tokens to the mToken market
-        vm.prank(user);
-        mErc20Immutable(mToken).mint(supplyAmount, user, supplyAmount);
-
-        // User enters the market (required for borrowing)
-        address[] memory mTokens = new address[](1);
-        mTokens[0] = mToken;
-        vm.prank(user);
-        operator.enterMarkets(mTokens);
-    }
+    // Note: _setupCollateral has been removed to eliminate duplication.
+    // Use _setupCollateralReal() from BaseAssertionTest instead.
 
     /**
      * @notice Test that borrow price sanity assertion passes with valid oracle prices
@@ -115,7 +90,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testBorrowPriceSanityPassesWithValidPrice() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity to borrow
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -149,7 +124,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testBorrowPriceSanityFailsWithZeroPrice() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -248,7 +223,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testBorrowPriceStabilityPassesWithStablePrice() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -286,7 +261,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testBorrowPriceStabilityFailsWithDramaticChange() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity initially
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -325,7 +300,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testCrossFeedDeviationPassesWithConsistentFeeds() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -358,7 +333,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testCrossFeedDeviationPassesWithMinorDeviation() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -391,7 +366,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testCrossFeedDeviationFailsWithExtremeDeviation() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
@@ -425,7 +400,7 @@ contract TestOraclePriceAssertion is BaseAssertionTest {
     function testCrossFeedDeviationDetectsIntraTransactionDeviation() public {
         // Setup Alice with USDC collateral (100 USDC = 100e6)
         uint256 collateralAmount = 100e6; // 100 USDC (6 decimals)
-        _setupCollateral(address(mWeth), alice, collateralAmount);
+        _setupCollateralReal(address(mWeth), alice, collateralAmount);
 
         // Verify Alice has sufficient liquidity
         (uint256 liquidity, uint256 shortfall) = operator.getHypotheticalAccountLiquidity(alice, address(0), 0, 0);
