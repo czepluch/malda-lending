@@ -42,12 +42,11 @@ contract AccountLiquidityAssertion is Assertion {
      * @dev Verifies that _getHypotheticalAccountLiquidity returns shortfall = 0 for allowed borrows
      */
     function assertionBorrowLiquidity() external {
-        IOperatorDefender operatorDefender = IOperatorDefender(ph.getAssertionAdopter());
         IOperator operator = IOperator(ph.getAssertionAdopter());
 
         // Get all borrow calls in this transaction
         PhEvm.CallInputs[] memory borrowCalls =
-            ph.getCallInputs(address(operatorDefender), operatorDefender.beforeMTokenBorrow.selector);
+            ph.getCallInputs(address(operator), IOperatorDefender.beforeMTokenBorrow.selector);
 
         for (uint256 i = 0; i < borrowCalls.length; i++) {
             // Decode the borrow call parameters
@@ -69,12 +68,11 @@ contract AccountLiquidityAssertion is Assertion {
      * @dev Verifies that _getHypotheticalAccountLiquidity returns shortfall > 0 for allowed liquidations
      */
     function assertionLiquidationLiquidity() external {
-        IOperatorDefender operatorDefender = IOperatorDefender(ph.getAssertionAdopter());
         IOperator operator = IOperator(ph.getAssertionAdopter());
 
         // Get all liquidation calls in this transaction
         PhEvm.CallInputs[] memory liquidateCalls =
-            ph.getCallInputs(address(operatorDefender), operatorDefender.beforeMTokenLiquidate.selector);
+            ph.getCallInputs(address(operator), IOperatorDefender.beforeMTokenLiquidate.selector);
 
         for (uint256 i = 0; i < liquidateCalls.length; i++) {
             // Decode the liquidation call parameters
@@ -104,12 +102,11 @@ contract AccountLiquidityAssertion is Assertion {
      * @dev Verifies that _getHypotheticalAccountLiquidity returns shortfall = 0 for allowed redeems
      */
     function assertionRedeemLiquidity() external {
-        IOperatorDefender operatorDefender = IOperatorDefender(ph.getAssertionAdopter());
         IOperator operator = IOperator(ph.getAssertionAdopter());
 
         // Get all redeem calls in this transaction
         PhEvm.CallInputs[] memory redeemCalls =
-            ph.getCallInputs(address(operatorDefender), operatorDefender.beforeMTokenRedeem.selector);
+            ph.getCallInputs(address(operator), IOperatorDefender.beforeMTokenRedeem.selector);
 
         for (uint256 i = 0; i < redeemCalls.length; i++) {
             // Decode the redeem call parameters
@@ -148,12 +145,11 @@ contract AccountLiquidityAssertion is Assertion {
      * @dev Verifies that seize operations are gated by liquidation requirements
      */
     function assertionSeizeLiquidity() external {
-        IOperatorDefender operatorDefender = IOperatorDefender(ph.getAssertionAdopter());
         IOperator operator = IOperator(ph.getAssertionAdopter());
 
         // Get all seize calls in this transaction
         PhEvm.CallInputs[] memory seizeCalls =
-            ph.getCallInputs(address(operatorDefender), operatorDefender.beforeMTokenSeize.selector);
+            ph.getCallInputs(address(operator), IOperatorDefender.beforeMTokenSeize.selector);
 
         for (uint256 i = 0; i < seizeCalls.length; i++) {
             // Decode the seize call parameters
