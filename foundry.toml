@@ -93,3 +93,24 @@ fuzz = { runs = 32 }
 # Profile for deep fuzz testing (CI/nightly)
 [profile.fuzz-deep]
 fuzz = { runs = 10000, max_test_rejects = 1000000 }
+
+# Profile for backtesting against historical blockchain data
+[profile.backtest]
+libs = ['node_modules', 'lib']
+out = "out"
+src = "assertions/src"
+test = "assertions/test"
+ffi = true
+
+evm_version = 'london'
+optimizer = true
+optimizer_runs = 200
+solc_version = '0.8.28'
+
+remappings = [
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+  "risc0/=lib/risc0-ethereum/contracts/src/",
+  "forge-std/=lib/forge-std/src/",
+  "credible-std/=lib/credible-std/src/",
+]
