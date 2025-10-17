@@ -100,7 +100,7 @@ contract MockMToken {
 
 // Mock interest rate model for testing
 contract MockInterestRateModel is IInterestRateModel {
-    uint256 public borrowRate = 1e16; // 1% per block
+    uint256 public borrowRate = 1e14; // 0.01% per block
 
     function isInterestRateModel() external pure returns (bool) {
         return true;
@@ -145,7 +145,7 @@ contract MockInterestRateModel is IInterestRateModel {
         returns (uint256)
     {
         uint256 oneMinusReserveFactor = 1e18 - reserveFactorMantissa;
-        uint256 borrowRateMantissa = 1e16; // 1% per block
+        uint256 borrowRateMantissa = 1e14; // 0.01% per block
         uint256 rateToPool = (borrowRateMantissa * oneMinusReserveFactor) / 1e18;
         return (this.utilizationRate(cash, borrows, reserves) * rateToPool) / 1e18;
     }

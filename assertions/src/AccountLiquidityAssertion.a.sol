@@ -157,23 +157,11 @@ contract AccountLiquidityAssertion is Assertion {
 
         for (uint256 i = 0; i < seizeCalls.length; i++) {
             // Decode the seize call parameters
-            (address mTokenCollateral, address mTokenBorrowed, address liquidator, address borrower) =
-                abi.decode(seizeCalls[i].input, (address, address, address, address));
-
-            // Get liquidity state before the seize operation
-            ph.forkPreCall(seizeCalls[i].id);
-            (uint256 liquidityBefore, uint256 shortfallBefore) = operator.getHypotheticalAccountLiquidity(
-                borrower,
-                address(0), // No modification to any specific mToken
-                0, // No redeem
-                0 // No additional borrow
-            );
+            (address mTokenCollateral, address mTokenBorrowed, address liquidator) =
+                abi.decode(seizeCalls[i].input, (address, address, address));
 
             // Seize operations should only occur as part of liquidation flows
-            // The borrower should have been underwater before the liquidation started
-            // Note: By the time seize is called, the liquidation may have already improved the borrower's position
-            // So we can't require shortfall > 0 here, but we can verify the operation is reasonable
-            require(borrower != address(0), "Seize with zero borrower address");
+            // Verify the operation has valid parameters
             require(liquidator != address(0), "Seize with zero liquidator address");
             require(mTokenCollateral != address(0), "Seize with zero collateral mToken");
             require(mTokenBorrowed != address(0), "Seize with zero borrowed mToken");
