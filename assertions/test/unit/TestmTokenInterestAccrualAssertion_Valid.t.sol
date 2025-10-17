@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import {BaseAssertionTest, MockInterestRateModel} from "./BaseAssertionTest.t.sol";
-import {mTokenInterestAccrualAssertion} from "../src/mTokenInterestAccrualAssertion.a.sol";
-import {mErc20Immutable} from "../../src/mToken/mErc20Immutable.sol";
-import {ERC20Mock} from "../../test/mocks/ERC20Mock.sol";
+import {mTokenInterestAccrualAssertion} from "../../src/mTokenInterestAccrualAssertion.a.sol";
+import {mErc20Immutable} from "../../../src/mToken/mErc20Immutable.sol";
+import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";
 
 /**
  * @title mToken Interest Accrual Assertion Valid Tests

@@ -4,12 +4,12 @@ pragma solidity ^0.8.13;
 import {CredibleTest} from "credible-std/CredibleTest.sol";
 import {Test} from "forge-std/Test.sol";
 import {console} from "forge-std/console.sol";
-import {mTokenLiquidationAssertion} from "../src/mTokenLiquidationAssertion.a.sol";
+import {mTokenLiquidationAssertion} from "../../src/mTokenLiquidationAssertion.a.sol";
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {MockOracleVulnerable} from "./mocks/MockOracleVulnerable.sol";
-import {MockMTokenVulnerable} from "./mocks/MockMTokenVulnerable.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
-import {BatchPriceManipulator} from "./batch/BatchPriceManipulator.sol";
+import {MockOracleVulnerable} from "../mocks/MockOracleVulnerable.sol";
+import {MockMTokenVulnerable} from "../mocks/MockMTokenVulnerable.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
+import {BatchPriceManipulator} from "../batch/BatchPriceManipulator.sol";
 
 /**
  * @title mToken Liquidation Assertion Tests - Invalid (Unhappy Path)

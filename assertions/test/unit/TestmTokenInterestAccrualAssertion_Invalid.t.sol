@@ -2,10 +2,10 @@
 pragma solidity ^0.8.13;
 
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {mTokenInterestAccrualAssertion} from "../src/mTokenInterestAccrualAssertion.a.sol";
-import {MockMTokenVulnerable} from "./mocks/MockMTokenVulnerable.sol";
-import {MockInterestRateModelVulnerable} from "./mocks/MockInterestRateModelVulnerable.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
+import {mTokenInterestAccrualAssertion} from "../../src/mTokenInterestAccrualAssertion.a.sol";
+import {MockMTokenVulnerable} from "../mocks/MockMTokenVulnerable.sol";
+import {MockInterestRateModelVulnerable} from "../mocks/MockInterestRateModelVulnerable.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
 
 /**
  * @title mToken Interest Accrual Assertion Invalid Tests

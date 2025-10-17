@@ -5,15 +5,15 @@ import {CredibleTest} from "credible-std/CredibleTest.sol";
 import {Test} from "forge-std/Test.sol";
 
 // Real protocol imports
-import {MixedPriceOracleV4} from "../../src/oracles/MixedPriceOracleV4.sol";
-import {IOperatorDefender} from "../../src/interfaces/IOperator.sol";
-import {IInterestRateModel} from "../../src/interfaces/IInterestRateModel.sol";
+import {MixedPriceOracleV4} from "../../../src/oracles/MixedPriceOracleV4.sol";
+import {IOperatorDefender} from "../../../src/interfaces/IOperator.sol";
+import {IInterestRateModel} from "../../../src/interfaces/IInterestRateModel.sol";
 
 // Test utilities
-import {Base_Unit_Test} from "../../test/Base_Unit_Test.t.sol";
-import {mErc20Immutable} from "../../src/mToken/mErc20Immutable.sol";
+import {Base_Unit_Test} from "../../../test/Base_Unit_Test.t.sol";
+import {mErc20Immutable} from "../../../src/mToken/mErc20Immutable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC20Mock} from "../../test/mocks/ERC20Mock.sol";
+import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";
 
 // Mock adapters for oracle feeds
 contract MockPriceFeed {

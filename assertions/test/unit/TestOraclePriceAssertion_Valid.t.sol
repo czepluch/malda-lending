@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {OraclePriceAssertion} from "../src/OraclePriceAssertion.a.sol";
+import {OraclePriceAssertion} from "../../src/OraclePriceAssertion.a.sol";
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {mErc20Immutable} from "../../src/mToken/mErc20Immutable.sol";
+import {mErc20Immutable} from "../../../src/mToken/mErc20Immutable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC20Mock} from "../../test/mocks/ERC20Mock.sol";
+import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";
 import {console} from "forge-std/console.sol";
 
 /**

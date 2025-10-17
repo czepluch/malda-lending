@@ -13,7 +13,7 @@ contract BacktestMTokenLiquidation is CredibleTestWithBacktesting {
 
     // Backtesting configuration
     uint256 constant BLOCK_RANGE = 10;
-    uint256 constant END_BLOCK = 0; // TODO: Set to block number with known liquidation activity
+    uint256 constant END_BLOCK = 0; // TODO: Can't find liquidation activity
 
     /**
      * @notice Backtest liquidation price sanity against historical transactions

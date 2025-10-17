@@ -2,10 +2,10 @@
 pragma solidity ^0.8.13;
 
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {OutflowLimiterAssertion} from "../src/OutflowLimiterAssertion.a.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
-import {MockOracleVulnerable} from "./mocks/MockOracleVulnerable.sol";
-import {BatchOutflowBypass} from "./batch/BatchOutflowBypass.sol";
+import {OutflowLimiterAssertion} from "../../src/OutflowLimiterAssertion.a.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
+import {MockOracleVulnerable} from "../mocks/MockOracleVulnerable.sol";
+import {BatchOutflowBypass} from "../batch/BatchOutflowBypass.sol";
 
 /**
  * @title Outflow Limiter Assertion Invalid Tests

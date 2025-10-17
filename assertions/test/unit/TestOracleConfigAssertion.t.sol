@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {OracleConfigAssertion} from "../src/OracleConfigAssertion.a.sol";
+import {OracleConfigAssertion} from "../../src/OracleConfigAssertion.a.sol";
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
 
 contract TestOracleConfigAssertion is BaseAssertionTest {

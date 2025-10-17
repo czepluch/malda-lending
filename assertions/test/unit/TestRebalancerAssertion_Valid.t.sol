@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {RebalancerAssertion} from "../src/RebalancerAssertion.a.sol";
-import {Rebalancer} from "../../src/rebalancer/Rebalancer.sol";
-import {IRebalancer} from "../../src/interfaces/IRebalancer.sol";
+import {RebalancerAssertion} from "../../src/RebalancerAssertion.a.sol";
+import {Rebalancer} from "../../../src/rebalancer/Rebalancer.sol";
+import {IRebalancer} from "../../../src/interfaces/IRebalancer.sol";
 
 // Mock Bridge for testing
 contract MockBridge {

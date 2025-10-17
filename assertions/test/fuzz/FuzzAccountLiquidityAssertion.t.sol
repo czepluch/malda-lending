@@ -5,7 +5,7 @@ import {CredibleTest} from "credible-std/CredibleTest.sol";
 import {Test} from "forge-std/Test.sol";
 import {console} from "forge-std/console.sol";
 import {AccountLiquidityAssertion} from "../../src/AccountLiquidityAssertion.a.sol";
-import {BaseAssertionTest} from "../BaseAssertionTest.t.sol";
+import {BaseAssertionTest} from "../unit/BaseAssertionTest.t.sol";
 import {mErc20Immutable} from "../../../src/mToken/mErc20Immutable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {OraclePriceAssertion} from "../src/OraclePriceAssertion.a.sol";
+import {OraclePriceAssertion} from "../../src/OraclePriceAssertion.a.sol";
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
-import {MockOracleVulnerable} from "./mocks/MockOracleVulnerable.sol";
-import {MockMTokenVulnerable} from "./mocks/MockMTokenVulnerable.sol";
-import {BatchPriceManipulator} from "./batch/BatchPriceManipulator.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
+import {MockOracleVulnerable} from "../mocks/MockOracleVulnerable.sol";
+import {MockMTokenVulnerable} from "../mocks/MockMTokenVulnerable.sol";
+import {BatchPriceManipulator} from "../batch/BatchPriceManipulator.sol";
 import {console} from "forge-std/console.sol";
 
 /**

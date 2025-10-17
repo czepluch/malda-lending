@@ -2,13 +2,13 @@
 pragma solidity ^0.8.13;
 
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {mTokenRedeemOutflowAssertion} from "../src/mTokenRedeemOutflowAssertion.a.sol";
-import {MockMTokenVulnerable} from "./mocks/MockMTokenVulnerable.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
-import {MockOracleVulnerable} from "./mocks/MockOracleVulnerable.sol";
-import {MockInterestRateModelVulnerable} from "./mocks/MockInterestRateModelVulnerable.sol";
-import {BatchMTokenRedeem} from "./batch/BatchMTokenRedeem.sol";
-import {ImErc20} from "../../src/interfaces/ImErc20.sol";
+import {mTokenRedeemOutflowAssertion} from "../../src/mTokenRedeemOutflowAssertion.a.sol";
+import {MockMTokenVulnerable} from "../mocks/MockMTokenVulnerable.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
+import {MockOracleVulnerable} from "../mocks/MockOracleVulnerable.sol";
+import {MockInterestRateModelVulnerable} from "../mocks/MockInterestRateModelVulnerable.sol";
+import {BatchMTokenRedeem} from "../batch/BatchMTokenRedeem.sol";
+import {ImErc20} from "../../../src/interfaces/ImErc20.sol";
 
 /**
  * @title mToken Redeem Outflow Assertion Invalid Tests

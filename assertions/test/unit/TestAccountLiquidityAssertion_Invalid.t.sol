@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import {CredibleTest} from "credible-std/CredibleTest.sol";
 import {Test} from "forge-std/Test.sol";
 import {console} from "forge-std/console.sol";
-import {AccountLiquidityAssertion} from "../src/AccountLiquidityAssertion.a.sol";
+import {AccountLiquidityAssertion} from "../../src/AccountLiquidityAssertion.a.sol";
 import {BaseAssertionTest} from "./BaseAssertionTest.t.sol";
-import {MockOperatorVulnerable} from "./mocks/MockOperatorVulnerable.sol";
+import {MockOperatorVulnerable} from "../mocks/MockOperatorVulnerable.sol";
 
 /**
  * @title Account Liquidity Assertion Tests - Invalid (Unhappy Path)
