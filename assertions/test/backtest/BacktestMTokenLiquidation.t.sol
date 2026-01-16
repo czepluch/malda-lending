@@ -34,14 +34,19 @@ contract BacktestMTokenLiquidation is CredibleTestWithBacktesting {
         // 1. Users call mToken.liquidate() directly (top-level transaction)
         // 2. mToken is the assertion adopter for this assertion
         // 3. Bash script filters for tx.to == MTOKEN_ADDRESS, which matches liquidation transactions
-        executeBacktest({
-            targetContract: MTOKEN_ADDRESS,
-            endBlock: END_BLOCK,
-            blockRange: BLOCK_RANGE,
-            assertionCreationCode: type(mTokenLiquidationAssertion).creationCode,
-            assertionSelector: mTokenLiquidationAssertion.assertionLiquidationPriceSanity.selector,
-            rpcUrl: rpcUrl
-        });
+        executeBacktest(
+            BacktestingTypes.BacktestingConfig({
+                targetContract: MTOKEN_ADDRESS,
+                endBlock: END_BLOCK,
+                blockRange: BLOCK_RANGE,
+                assertionCreationCode: type(mTokenLiquidationAssertion).creationCode,
+                assertionSelector: mTokenLiquidationAssertion.assertionLiquidationPriceSanity.selector,
+                rpcUrl: rpcUrl,
+                detailedBlocks: false,
+                useTraceFilter: false,
+                forkByTxHash: false
+            })
+        );
     }
 
     /**
@@ -59,48 +64,18 @@ contract BacktestMTokenLiquidation is CredibleTestWithBacktesting {
         string memory rpcUrl = vm.envString("LINEA_RPC_URL");
 
         // Execute backtest against historical liquidation transactions
-        executeBacktest({
-            targetContract: MTOKEN_ADDRESS,
-            endBlock: END_BLOCK,
-            blockRange: BLOCK_RANGE,
-            assertionCreationCode: type(mTokenLiquidationAssertion).creationCode,
-            assertionSelector: mTokenLiquidationAssertion.assertionLiquidationPriceStability.selector,
-            rpcUrl: rpcUrl
-        });
-    }
-
-    /**
-     * @notice Test helper to verify RPC connection and configuration
-     * @dev Run this first if backtests are failing to verify setup
-     */
-    function testBacktest_VerifySetup() public {
-        console.log("=== BACKTEST SETUP VERIFICATION ===");
-
-        // Verify environment variable is set
-        try vm.envString("LINEA_RPC_URL") returns (string memory rpcUrl) {
-            console.log("RPC URL configured:", rpcUrl);
-            console.log("Target mToken:", MTOKEN_ADDRESS);
-            console.log("Block Range:", BLOCK_RANGE);
-            console.log("End Block:", END_BLOCK);
-
-            if (MTOKEN_ADDRESS == address(0)) {
-                console.log("WARNING: MTOKEN_ADDRESS not set!");
-                console.log("Update MTOKEN_ADDRESS constant with actual mToken contract address");
-            }
-
-            if (END_BLOCK == 0) {
-                console.log("WARNING: END_BLOCK not set!");
-                console.log("Update END_BLOCK constant with block number containing liquidation activity");
-            }
-
-            if (MTOKEN_ADDRESS != address(0) && END_BLOCK != 0) {
-                console.log("Setup verification: PASSED");
-            }
-        } catch {
-            console.log("ERROR: LINEA_RPC_URL environment variable not set");
-            console.log("Please set it before running backtests:");
-            console.log('export LINEA_RPC_URL="https://linea-mainnet.g.alchemy.com/v2/YOUR_API_KEY"');
-            revert("LINEA_RPC_URL not configured");
-        }
+        executeBacktest(
+            BacktestingTypes.BacktestingConfig({
+                targetContract: MTOKEN_ADDRESS,
+                endBlock: END_BLOCK,
+                blockRange: BLOCK_RANGE,
+                assertionCreationCode: type(mTokenLiquidationAssertion).creationCode,
+                assertionSelector: mTokenLiquidationAssertion.assertionLiquidationPriceStability.selector,
+                rpcUrl: rpcUrl,
+                detailedBlocks: false,
+                useTraceFilter: false,
+                forkByTxHash: false
+            })
+        );
     }
 }

@@ -26,14 +26,19 @@ contract BacktestAccountLiquidityAssertion is CredibleTestWithBacktesting {
         string memory rpcUrl = vm.envString("LINEA_RPC_URL");
 
         // Execute backtest against historical borrow transactions
-        executeBacktest({
-            targetContract: OPERATOR_ADDRESS,
-            endBlock: 23851082,
-            blockRange: BLOCK_RANGE,
-            assertionCreationCode: type(AccountLiquidityAssertion).creationCode,
-            assertionSelector: AccountLiquidityAssertion.assertionBorrowLiquidity.selector,
-            rpcUrl: rpcUrl
-        });
+        executeBacktest(
+            BacktestingTypes.BacktestingConfig({
+                targetContract: OPERATOR_ADDRESS,
+                endBlock: 23851082,
+                blockRange: BLOCK_RANGE,
+                assertionCreationCode: type(AccountLiquidityAssertion).creationCode,
+                assertionSelector: AccountLiquidityAssertion.assertionBorrowLiquidity.selector,
+                rpcUrl: rpcUrl,
+                detailedBlocks: false,
+                useTraceFilter: false,
+                forkByTxHash: false
+            })
+        );
     }
 
     /**
@@ -48,34 +53,18 @@ contract BacktestAccountLiquidityAssertion is CredibleTestWithBacktesting {
         string memory rpcUrl = vm.envString("LINEA_RPC_URL");
 
         // Execute backtest against historical redeem transactions
-        executeBacktest({
-            targetContract: MUSDC_TOKEN_ADDRESS,
-            endBlock: 23851262,
-            blockRange: BLOCK_RANGE,
-            assertionCreationCode: type(AccountLiquidityAssertion).creationCode,
-            assertionSelector: AccountLiquidityAssertion.assertionRedeemLiquidity.selector,
-            rpcUrl: rpcUrl
-        });
-    }
-
-    /**
-     * @notice Test helper to verify RPC connection and configuration
-     * @dev Run this first if backtests are failing to verify setup
-     */
-    function testBacktest_VerifySetup() public {
-        console.log("=== BACKTEST SETUP VERIFICATION ===");
-
-        // Verify environment variable is set
-        try vm.envString("LINEA_SEPOLIA_RPC_URL") returns (string memory rpcUrl) {
-            console.log("RPC URL configured:", rpcUrl);
-            console.log("Target Operator:", OPERATOR_ADDRESS);
-            console.log("Block Range:", BLOCK_RANGE);
-            console.log("Setup verification: PASSED");
-        } catch {
-            console.log("ERROR: LINEA_SEPOLIA_RPC_URL environment variable not set");
-            console.log("Please set it before running backtests:");
-            console.log('export LINEA_SEPOLIA_RPC_URL="https://rpc.sepolia.linea.build"');
-            revert("LINEA_SEPOLIA_RPC_URL not configured");
-        }
+        executeBacktest(
+            BacktestingTypes.BacktestingConfig({
+                targetContract: MUSDC_TOKEN_ADDRESS,
+                endBlock: 23851262,
+                blockRange: BLOCK_RANGE,
+                assertionCreationCode: type(AccountLiquidityAssertion).creationCode,
+                assertionSelector: AccountLiquidityAssertion.assertionRedeemLiquidity.selector,
+                rpcUrl: rpcUrl,
+                detailedBlocks: false,
+                useTraceFilter: false,
+                forkByTxHash: false
+            })
+        );
     }
 }
