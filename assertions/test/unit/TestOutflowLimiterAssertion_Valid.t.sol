@@ -5,6 +5,7 @@ import {BaseAssertionTest, MockInterestRateModel} from "./BaseAssertionTest.t.so
 import {OutflowLimiterAssertion} from "../../src/OutflowLimiterAssertion.a.sol";
 import {mErc20Immutable} from "../../../src/mToken/mErc20Immutable.sol";
 import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";
+import {BatchOutflowBypass} from "../batch/BatchOutflowBypass.sol";
 
 /**
  * @title Outflow Limiter Assertion Valid Tests
@@ -14,6 +15,7 @@ import {ERC20Mock} from "../../../test/mocks/ERC20Mock.sol";
 contract TestOutflowLimiterAssertion_Valid is BaseAssertionTest {
     MockInterestRateModel public mockInterestModel;
     mErc20Immutable public mUSDC;
+    BatchOutflowBypass public batchBypass;
 
     function setUp() public override {
         super.setUp();
@@ -38,6 +40,9 @@ contract TestOutflowLimiterAssertion_Valid is BaseAssertionTest {
 
         // Set collateral factor so users can borrow
         operator.setCollateralFactor(address(mUSDC), 0.8e18); // 80% collateral factor
+
+        // Deploy batch contract for testing multiple operations
+        batchBypass = new BatchOutflowBypass();
 
         // Note: Real operator's outflow limiter is configured at deployment
         // Most tests require specific limit values, so they use mocks (see Invalid tests)
@@ -206,5 +211,49 @@ contract TestOutflowLimiterAssertion_Valid is BaseAssertionTest {
         // Simple borrow to trigger assertion - should pass with reasonable window
         vm.prank(alice);
         operator.beforeMTokenBorrow(address(mUSDC), alice, 10e6);
+    }
+
+    /**
+     * @notice Test that 10 borrows pass when limit is enabled and check assertion gas usage
+     * @dev Verifies cumulative tracking across 10 operations in a single transaction
+     * @dev With limit enabled, operations are tracked and must stay within limit
+     * @dev This test checks if assertion gas usage stays within limits for 10 operations
+     */
+    function testBorrowOutflowLimit_10Transactions_CheckAssertionGasUsage() public {
+        // Setup Alice with sufficient collateral (1000 USDC = $1000)
+        _setupCollateralReal(address(mUSDC), alice, 1000e6);
+        operator.setWhitelistedUser(alice, true);
+
+        // Add liquidity to mUSDC pool so borrows can succeed
+        // Mint underlying tokens to this contract
+        usdc.mint(address(this), 10000e6);
+        usdc.approve(address(mUSDC), 10000e6);
+        // Mint mTokens to add liquidity to the pool
+        mUSDC.mint(10000e6, address(this), 0);
+
+        // Enable outflow limit for testing
+        // Set limit to 1000e18 USD (representing $1000)
+        // Our test: 10 × 10e6 USDC = 100e6 USDC total
+        // With USDC price = $1, that's $100 USD, well under $1000 limit
+        operator.setOutflowTimeLimitInUSD(1000e18);
+        operator.resetOutflowVolume(); // Reset cumulative volume to 0
+
+        // Verify limit is enabled
+        assertEq(operator.limitPerTimePeriod(), 1000e18, "Limit should be enabled");
+
+        // Register assertion - will now track cumulative outflows
+        cl.assertion({
+            adopter: address(operator),
+            createData: type(OutflowLimiterAssertion).creationCode,
+            fnSelector: OutflowLimiterAssertion.assertionBorrowOutflowLimit.selector
+        });
+
+        // Execute 10 borrows in single transaction through mToken contract
+        // 10 × 10e6 = 100e6 total, well within Alice's collateral capacity and outflow limit
+        vm.startPrank(alice);
+        for (uint256 i = 0; i < 10; i++) {
+            mUSDC.borrow(10e6); // $10 per borrow (small amount)
+        }
+        vm.stopPrank();
     }
 }

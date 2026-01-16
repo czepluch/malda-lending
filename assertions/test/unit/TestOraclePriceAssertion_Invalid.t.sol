@@ -200,6 +200,50 @@ contract TestOraclePriceAssertion_Invalid is BaseAssertionTest {
         );
     }
 
+    /**
+     * @notice Test 10 price changes with borrow operation and check assertion gas usage
+     * @dev Tests assertion gas usage with 10 price changes in a single transaction
+     * @dev Uses prices within threshold (all <3% change) so operation passes
+     */
+    function testBorrowPriceStability_10PriceChanges_CheckAssertionGasUsage() public {
+        // Setup: Set initial price
+        uint256 initialPrice = 1e30; // $1 with 30 decimals
+        mockOracle.setPriceOverride(MOCK_MTOKEN, initialPrice);
+
+        // Allow the borrow to bypass liquidity checks
+        mockOperator.setBypassBorrowLiquidityCheck(true);
+
+        // Register assertion for price stability
+        cl.assertion({
+            adopter: address(mockOperator),
+            createData: type(OraclePriceAssertion).creationCode,
+            fnSelector: OraclePriceAssertion.assertionBorrowPriceStability.selector
+        });
+
+        // Create array of 10 price changes, all within threshold (<3% each)
+        uint256[] memory prices = new uint256[](10);
+        prices[0] = (initialPrice * 101) / 100; // +1%
+        prices[1] = (initialPrice * 102) / 100; // +2%
+        prices[2] = (initialPrice * 1015) / 1000; // +1.5%
+        prices[3] = (initialPrice * 1025) / 1000; // +2.5%
+        prices[4] = (initialPrice * 101) / 100; // +1%
+        prices[5] = (initialPrice * 102) / 100; // +2%
+        prices[6] = (initialPrice * 1015) / 1000; // +1.5%
+        prices[7] = (initialPrice * 1025) / 1000; // +2.5%
+        prices[8] = (initialPrice * 101) / 100; // +1%
+        prices[9] = (initialPrice * 102) / 100; // +2%
+
+        // Execute batch operation with 10 price changes - should pass and check gas usage
+        batchManipulator.executeBorrowWithMultiplePriceChanges(
+            mockOperator,
+            mockOracle,
+            MOCK_MTOKEN,
+            alice,
+            1000e6, // borrow amount
+            prices
+        );
+    }
+
     // ============ Multiple Calls Path Tests (Else Branch) ============
 
     /**
@@ -316,6 +360,68 @@ contract TestOraclePriceAssertion_Invalid is BaseAssertionTest {
             400e6, // borrow amount 3
             price2,
             price3
+        );
+    }
+
+    /**
+     * @notice Test 10 borrow calls with price manipulation and check assertion gas usage
+     * @dev Tests assertion gas usage with 10 operations in a single transaction
+     * @dev Uses price within threshold (3% change) so operations pass
+     */
+    function testBorrowPriceStability_10Transactions_CheckAssertionGasUsage() public {
+        // Setup: Set initial price
+        uint256 initialPrice = 1e30; // $1 with 30 decimals
+        mockOracle.setPriceOverride(MOCK_MTOKEN, initialPrice);
+
+        // Allow borrows to bypass liquidity checks
+        mockOperator.setBypassBorrowLiquidityCheck(true);
+
+        // Setup 10 borrower addresses
+        address[10] memory borrowers = [
+            alice,
+            bob,
+            address(0xCAFE),
+            address(0xBEEF),
+            address(0xDEAD),
+            address(0xFACE),
+            address(0x1234),
+            address(0x5678),
+            address(0x9ABC),
+            address(0xDEF0)
+        ];
+
+        // Setup 10 borrow amounts (small amounts for gas testing)
+        uint256[10] memory borrowAmounts = [
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6)
+        ];
+
+        // Calculate a price with <5% deviation (3% increase) - within threshold
+        uint256 acceptablePrice = (initialPrice * 103) / 100;
+
+        // Register assertion for price stability
+        cl.assertion({
+            adopter: address(mockOperator),
+            createData: type(OraclePriceAssertion).creationCode,
+            fnSelector: OraclePriceAssertion.assertionBorrowPriceStability.selector
+        });
+
+        // Execute batch with 10 borrow calls - should pass and check gas usage
+        batchManipulator.executeTenBorrowsWithPriceManipulation(
+            mockOperator,
+            mockOracle,
+            MOCK_MTOKEN,
+            borrowers,
+            borrowAmounts,
+            acceptablePrice
         );
     }
 }

@@ -285,4 +285,30 @@ contract TestOutflowLimiterAssertion_Invalid is BaseAssertionTest {
             3
         );
     }
+
+    /**
+     * @notice Test that 10 borrows within limit pass and check assertion gas usage
+     * @dev Verifies that 10 small borrows under cumulative limit are allowed
+     * @dev Each 50e18 = $50, total $500 < $1000 limit
+     * @dev This test checks if assertion gas usage stays within limits for 10 operations
+     */
+    function testMultipleSmallTransactions_10Transactions_CheckAssertionGasUsage() public {
+        mockOperator.setCumulativeOutflowVolume(0);
+        mockOperator.setBypassBorrowLiquidityCheck(true);
+
+        cl.assertion({
+            adopter: address(mockOperator),
+            createData: type(OutflowLimiterAssertion).creationCode,
+            fnSelector: OutflowLimiterAssertion.assertionBorrowOutflowLimit.selector
+        });
+
+        // 10 × $50 = $500 total, well under $1000 limit
+        batchBypass.executeMultipleSmallBorrows(
+            mockOperator,
+            address(0x123),
+            alice,
+            50e18, // $50 (e18 format for operator-based assertion)
+            10
+        );
+    }
 }

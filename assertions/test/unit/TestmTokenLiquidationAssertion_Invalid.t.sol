@@ -276,6 +276,69 @@ contract TestmTokenLiquidationAssertion_Invalid is BaseAssertionTest {
         );
     }
 
+    /**
+     * @notice Test 10 liquidation calls with price manipulation and check assertion gas usage
+     * @dev Tests assertion gas usage with 10 operations in a single transaction
+     * @dev Uses prices within threshold (3% change) so operations pass
+     */
+    function testLiquidationPriceStability_10Transactions_CheckAssertionGasUsage() public {
+        // Setup: Set initial prices for both tokens
+        uint256 borrowedInitialPrice = 1e30; // $1 with 30 decimals
+        uint256 collateralInitialPrice = 2e30; // $2 with 30 decimals
+        mockOracle.setPriceOverride(address(mockMTokenBorrowed), borrowedInitialPrice);
+        mockOracle.setPriceOverride(address(mockMTokenCollateral), collateralInitialPrice);
+
+        // Calculate acceptable prices with <5% deviation (3% changes)
+        uint256 borrowedAcceptablePrice = (borrowedInitialPrice * 103) / 100; // 3% increase
+        uint256 collateralAcceptablePrice = (collateralInitialPrice * 103) / 100; // 3% increase
+
+        // Setup 10 borrower addresses
+        address[10] memory borrowers = [
+            alice,
+            bob,
+            address(0xCAFE),
+            address(0xBEEF),
+            address(0xDEAD),
+            address(0xFACE),
+            address(0x1234),
+            address(0x5678),
+            address(0x9ABC),
+            address(0xDEF0)
+        ];
+
+        // Setup 10 repay amounts (small amounts for gas testing)
+        uint256[10] memory repayAmounts = [
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6),
+            uint256(100e6)
+        ];
+
+        // Register assertion with mToken as adopter
+        cl.assertion({
+            adopter: address(mockMTokenBorrowed),
+            createData: type(mTokenLiquidationAssertion).creationCode,
+            fnSelector: mTokenLiquidationAssertion.assertionLiquidationPriceStability.selector
+        });
+
+        // Execute batch with 10 liquidation calls - should pass and check gas usage
+        batchManipulator.executeTenLiquidationsWithPriceManipulation(
+            mockMTokenBorrowed,
+            mockOracle,
+            address(mockMTokenCollateral),
+            borrowers,
+            repayAmounts,
+            borrowedAcceptablePrice,
+            collateralAcceptablePrice
+        );
+    }
+
     // ============ Price Sanity Tests ============
 
     /**

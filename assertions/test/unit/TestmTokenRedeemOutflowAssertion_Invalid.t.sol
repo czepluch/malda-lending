@@ -136,4 +136,29 @@ contract TestmTokenRedeemOutflowAssertion_Invalid is BaseAssertionTest {
             3
         );
     }
+
+    /**
+     * @notice Test that 10 redeems within limit pass and check assertion gas usage
+     * @dev Verifies cumulative tracking across 10 operations in a single transaction
+     * @dev Each 50e6 USDC = 50e14 USD, total 500e14 < 1000e14 limit
+     * @dev This test checks if assertion gas usage stays within limits for 10 operations
+     */
+    function testMultipleRedeems_10Transactions_CheckAssertionGasUsage() public {
+        mockOperator.setCumulativeOutflowVolume(0);
+        mockOperator.setBypassRedeemLiquidityCheck(true);
+
+        cl.assertion({
+            adopter: address(mockMTokenVuln),
+            createData: type(mTokenRedeemOutflowAssertion).creationCode,
+            fnSelector: mTokenRedeemOutflowAssertion.assertionRedeemOutflowLimit.selector
+        });
+
+        // Use batch contract to execute 10 redeems in single transaction
+        // 10 × $50 = $500 total, well under $1000 limit
+        batchRedeem.executeMultipleRedeems(
+            ImErc20(address(mockMTokenVuln)),
+            50e6, // $50 per redeem in 6-decimal USDC
+            10
+        );
+    }
 }

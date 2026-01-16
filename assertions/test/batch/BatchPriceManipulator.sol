@@ -260,4 +260,65 @@ contract BatchPriceManipulator {
         // Third liquidation at significantly changed prices - should trigger violation
         mTokenBorrowed.liquidate(borrowers[2], repayAmounts[2], mTokenCollateral);
     }
+
+    /**
+     * @notice Execute ten borrow calls with price manipulation between them
+     * @dev Tests assertion gas usage with 10 operations
+     * @dev The assertion will check each call individually using forkPostCall()
+     * @param operator The operator to call
+     * @param oracle The oracle to manipulate
+     * @param mToken The mToken being borrowed
+     * @param borrowers Array of 10 borrower addresses
+     * @param borrowAmounts Array of 10 borrow amounts
+     * @param manipulatedPrice The manipulated price to set between calls (should be within threshold for gas testing)
+     */
+    function executeTenBorrowsWithPriceManipulation(
+        IOperatorDefender operator,
+        MockOracleVulnerable oracle,
+        address mToken,
+        address[10] calldata borrowers,
+        uint256[10] calldata borrowAmounts,
+        uint256 manipulatedPrice
+    ) external {
+        // Execute 10 borrow calls with price manipulation between them
+        for (uint256 i = 0; i < 10; i++) {
+            operator.beforeMTokenBorrow(mToken, borrowers[i], borrowAmounts[i]);
+            // Set price after each call (except the last one)
+            if (i < 9) {
+                oracle.setPriceOverride(mToken, manipulatedPrice);
+            }
+        }
+    }
+
+    /**
+     * @notice Execute ten liquidation calls with price manipulation between them
+     * @dev Tests assertion gas usage with 10 operations
+     * @dev The assertion will check each call individually using forkPostCall()
+     * @param mTokenBorrowed The borrowed mToken (also serves as the liquidate() caller)
+     * @param oracle The oracle to manipulate
+     * @param mTokenCollateral The collateral mToken
+     * @param borrowers Array of 10 borrowers
+     * @param repayAmounts Array of 10 repay amounts
+     * @param manipulatedBorrowedPrice New borrowed token price (should be within threshold for gas testing)
+     * @param manipulatedCollateralPrice New collateral token price (should be within threshold for gas testing)
+     */
+    function executeTenLiquidationsWithPriceManipulation(
+        MockMTokenVulnerable mTokenBorrowed,
+        MockOracleVulnerable oracle,
+        address mTokenCollateral,
+        address[10] calldata borrowers,
+        uint256[10] calldata repayAmounts,
+        uint256 manipulatedBorrowedPrice,
+        uint256 manipulatedCollateralPrice
+    ) external {
+        // Execute 10 liquidation calls with price manipulation between them
+        for (uint256 i = 0; i < 10; i++) {
+            mTokenBorrowed.liquidate(borrowers[i], repayAmounts[i], mTokenCollateral);
+            // Set prices after each call (except the last one)
+            if (i < 9) {
+                oracle.setPriceOverride(address(mTokenBorrowed), manipulatedBorrowedPrice);
+                oracle.setPriceOverride(mTokenCollateral, manipulatedCollateralPrice);
+            }
+        }
+    }
 }
